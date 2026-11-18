@@ -84,7 +84,7 @@ NIST Special Publication (SP) 800-190, Application Container Security Guide
 
 <img width="322" height="311" alt="image" src="https://github.com/user-attachments/assets/4af99f2d-bf2b-4029-8270-850141d5b77d" />
 
-# Auditing the vanilla defaults of these three layers is our starting point here.
+## Auditing the vanilla defaults of these three layers is our starting point here.
 
 ### Network Layer
 
@@ -630,22 +630,21 @@ Shrinking the attack surface by reducing what the container is legally allowed t
 Stored as base64 encoded strings.** 
 *— You literally don't even need a key to decode it.*
 
-
-<img src="/icons/lock-keyhole_gray.svg" alt="/icons/lock-keyhole_gray.svg" width="40px" />
+🔒
 
 **Encryption at Rest
 Must be explicitly enabled via API Server config.**
 *— Note: Pre-existing secrets must be rewritten to trigger encryption.*
 
 
-<img src="/icons/database_blue.svg" alt="/icons/database_blue.svg" width="40px" />
+🗄️
 
 **Securing Snapshot Files
 An ETCD backup is basically a giant zip file of your secrets.**
 *— You need to strictly control both the storage location and IAM access to those backups.*
 
 
-<img src="/icons/key_green.svg" alt="/icons/key_green.svg" width="40px" />
+🔑
 
 **External Secrets Management
 Move secrets entirely out of the cluster (Vault, AWS SM, etc.).**
