@@ -1,1 +1,13 @@
-
+# Apply pre-loaded AppArmor profile (v1.34 GA field)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: apparmor-pod
+spec:
+  containers:
+  - name: app
+    image: nginx:1.27
+    securityContext:
+      appArmorProfile:
+        type: Localhost
+        localhostProfile: my-custom-profile
