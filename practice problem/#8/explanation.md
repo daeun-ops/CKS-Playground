@@ -2,7 +2,7 @@
 
 ## Walkthrough & Command Breakdown
 
-### Pre-Flight Checklist
+### Checklist
 - [ ] PSP was removed in v1.25 → modern CKS exams test this using PSA Namespace labels
 - [ ] Run `k label ns <Namespace> pod-security.kubernetes.io/enforce=baseline` (or `restricted`)
 - [ ] Run a two-way verification — attempt to create a violating Pod (`Forbidden`) and a normal Pod (`created`)
