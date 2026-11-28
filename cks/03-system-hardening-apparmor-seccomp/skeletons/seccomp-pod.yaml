@@ -1,1 +1,12 @@
-
+# Apply default runtime Seccomp profile
+apiVersion: v1
+kind: Pod
+metadata:
+  name: seccomp-pod
+spec:
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: app
+    image: nginx:1.27
