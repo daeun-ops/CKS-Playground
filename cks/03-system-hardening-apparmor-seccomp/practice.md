@@ -1,61 +1,34 @@
-# Domain 1 Practice Scenarios & Mock Questions
+# Domain 3 Practice Scenarios & Mock Questions
 
-## Scenario 1 NetworkPolicy — Default Deny & Targeted Allow
-**Task** In namespace `production`, block all ingress and egress traffic by default. Allow pods with `app=frontend` to reach `app=api` on TCP `8080`, and ensure DNS resolution works.
+## Scenario 7 & Mock Q09 Seccomp + AppArmor Profile on a Pod
+**Task (Q09)** Context `k8s-cluster2`. Create a pod named `seccomp-nginx` using `nginx:1.27` that enforces the `RuntimeDefault` Seccomp profile and a `Localhost` AppArmor profile named `k8s-nginx` (already loaded on all nodes).
 
-**Key Takeaway** Applying any `NetworkPolicy` isolates the pod. Once `Egress` is restricted, you must explicitly allow `UDP 53` for DNS lookups.
+**Key Takeaway:** Since Kubernetes v1.30+ (GA in v1.34), AppArmor is configured via `securityContext.appArmorProfile` rather than legacy annotations.
 
-```yaml
-# netpol.yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
+```bash
+k config use-context k8s-cluster2
+# Optional: verify profile is loaded on node
+# ssh <node-name> -- sudo aa-status | grep k8s-nginx
+
+
+apiVersion: v1
+kind: Pod
 metadata:
-  name: deny-all
-  namespace: production
+  name: seccomp-nginx
 spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-frontend-to-api
-  namespace: production
-spec:
-  podSelector:
-    matchLabels:
-      app: api
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - podSelector:
-        matchLabels:
-          app: frontend
-    ports:
-    - protocol: TCP
-      port: 8080
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-dns
-  namespace: production
-spec:
-  podSelector: {}
-  policyTypes:
-  - Egress
-  egress:
-  - to: []
-    ports:
-    - protocol: UDP
-      port: 53
-
-# Verify
-k apply -f netpol.yaml
-k exec frontend-pod -n production -- wget -qO- --timeout=2 http://<api-pod-ip>:8080
-k exec attacker-pod -n production -- wget -qO- --timeout=2 http://<api-pod-ip>:8080 # timee out
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: nginx
+    image: nginx:1.27
+    securityContext:
+      appArmorProfile:
+        type: Localhost
+        localhostProfile: k8s-nginx
 
 
+#Verify
+k apply -f pod.yaml
+k get pod seccomp-nginx # Must be Running
+k get pod seccomp-nginx -o jsonpath='{.spec.containers[0].securityContext.appArmorProfile}'
