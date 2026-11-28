@@ -52,3 +52,10 @@ spec:
     ports:
     - protocol: UDP
       port: 53
+
+
+k apply -f netpol.yaml
+k exec frontend-pod -n production -- wget -qO- --timeout=2 http://<api-pod-ip>:8080
+k exec attacker-pod -n production -- wget -qO- --timeout=2 http://<api-pod-ip>:8080 # timee out
+
+
